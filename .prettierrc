@@ -10,9 +10,7 @@
         "@trivago/prettier-plugin-sort-imports"
     ],
     "importOrder": [
-        "^@redux/(.*)$",
         "^@providers/(.*)$",
-        "^@doar/(.*)$",
         "^@components/(.*)$",
         "^@utils/(.*)$",
         "^@models/(.*)$",
