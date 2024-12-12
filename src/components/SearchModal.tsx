@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import BackSvg from "../assets/back.svg";
 import { useDebounce } from "../hooks/useDebounce";
@@ -10,7 +10,7 @@ export type ModalType = "start" | "end";
 interface Props {
   modalType: ModalType | null;
   onClose: () => void;
-  handleSearch: (value: string) => void;
+  handleSearch: (value: Poi) => void;
 }
 
 export const SearchModal = (props: Props) => {
@@ -40,7 +40,7 @@ export const SearchModal = (props: Props) => {
   return (
     <>
       {props.modalType && (
-        <div className="w-[100vw] h-[100dvh] bg-white absolute top-0 left-0 z-20">
+        <div className="w-[100dvw] h-[100dvh] bg-white fixed top-0 left-0 z-20">
           <div className="flex justify-between items-center px-4 border-b">
             <button onClick={props.onClose}>
               <img src={BackSvg} alt="back" />
@@ -57,13 +57,19 @@ export const SearchModal = (props: Props) => {
             </div>
           </div>
 
-          <div>
+          <div className="h-full overflow-x-hidden overflow-y-auto">
             {recommendations.map((poi, index) => (
-              <div key={index}>
-                <button onClick={() => props.handleSearch(poi.name ?? "")}>
-                  {poi.name}
+              <Fragment key={index}>
+                <button
+                  className="w-full px-4 py-2 border-b-[1px]"
+                  onClick={() => props.handleSearch(poi)}
+                >
+                  <div className="flex flex-col items-start">
+                    <p>{poi.name}</p>
+                    <p className="text-gray-400">{`${poi.newAddressList?.newAddress?.[0].fullAddressRoad}`}</p>
+                  </div>
                 </button>
-              </div>
+              </Fragment>
             ))}
           </div>
         </div>
