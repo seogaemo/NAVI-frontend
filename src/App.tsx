@@ -4,19 +4,71 @@ import CloseSvg from "./assets/close.svg";
 import SwapSvg from "./assets/swap.svg";
 import { Map } from "./components/Map";
 import { ModalType, SearchModal } from "./components/SearchModal";
-import { Poi } from "./libs/api/schemas";
+import { BodyType } from "./libs/api/custom-instance";
+import {
+  getMultiPedestrianRoutePedestrianMultiPost,
+  getSinglePedestrianRoutePedestrianSinglePost,
+} from "./libs/api/endpoints/pedestrian/pedestrian";
+import { PedestrianRouteRequest, Poi } from "./libs/api/schemas";
 
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState<ModalType | null>(null);
+  const [modalType, setModalType] = useState<ModalType | null>(null);
 
   const [start, setStart] = useState<Poi | null>(null);
   const [end, setEnd] = useState<Poi | null>(null);
 
-  const openModal = (type: ModalType) => () => setIsModalOpen(type);
-  const closeModal = () => setIsModalOpen(null);
+  const getDistance = (start: Poi, end: Poi) => {
+    const lat1 = start.frontLon;
+    const lon1 = start.frontLat;
+    const lat2 = end.frontLon;
+    const lon2 = end.frontLat;
+
+    if (!(lat1 && lon1 && lat2 && lon2)) return 0;
+
+    const radLat1 = (Math.PI * lat1) / 180;
+    const radLat2 = (Math.PI * lat2) / 180;
+    const theta = lon1 - lon2;
+    const radTheta = (Math.PI * theta) / 180;
+    let dist =
+      Math.sin(radLat1) * Math.sin(radLat2) +
+      Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
+    if (dist > 1) dist = 1;
+
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515 * 1.609344 * 1000;
+    if (dist < 100) dist = Math.round(dist / 10) * 10;
+    else dist = Math.round(dist / 100) * 100;
+
+    return dist;
+  };
+
+  const openModal = (type: ModalType) => () => setModalType(type);
+  const closeModal = () => setModalType(null);
   const handleSearch = (value: Poi) => {
-    if (isModalOpen === "start") setStart(value);
+    if (modalType === "start") setStart(value);
     else setEnd(value);
+
+    const _start = modalType === "start" ? value : start!;
+    const _end = modalType === "end" ? value : end!;
+
+    if (_start && _end) {
+      const isClose = getDistance(_start, _end) / 1000 <= 1;
+
+      const options: BodyType<PedestrianRouteRequest> = {
+        endName: encodeURIComponent(_end.name!),
+        endX: _end.frontLon!,
+        endY: _end.frontLat!,
+        startName: encodeURIComponent(_start.name!),
+        startX: _start.frontLon!,
+        startY: _start.frontLat!,
+      };
+
+      if (isClose)
+        getSinglePedestrianRoutePedestrianSinglePost(options).then(console.log);
+      else
+        getMultiPedestrianRoutePedestrianMultiPost(options).then(console.log);
+    }
 
     closeModal();
   };
@@ -84,8 +136,8 @@ function App() {
       </div>
 
       <SearchModal
-        key={isModalOpen}
-        modalType={isModalOpen}
+        key={modalType}
+        modalType={modalType}
         onClose={closeModal}
         handleSearch={handleSearch}
       />
