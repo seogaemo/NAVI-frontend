@@ -30,6 +30,13 @@ export const SearchModal = (props: Props) => {
     });
   }, [debouncedSearchValue]);
 
+  useEffect(() => {
+    return () => {
+      setRecommendations([]);
+      setSearchValue("");
+    };
+  }, []);
+
   return (
     <>
       {props.modalType && (
