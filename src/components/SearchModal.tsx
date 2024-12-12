@@ -1,7 +1,9 @@
 import { Fragment, useEffect, useState } from "react";
 
 import BackSvg from "../assets/back.svg";
+import MyLocationSvg from "../assets/my_location.svg";
 import { useDebounce } from "../hooks/useDebounce";
+import { getNearbyPointsLocationPointGet } from "../libs/api/endpoints/location/location";
 import { searchPoiPoiSearchGet } from "../libs/api/endpoints/poi/poi";
 import { Poi } from "../libs/api/schemas";
 
@@ -18,6 +20,18 @@ export const SearchModal = (props: Props) => {
   const debouncedSearchValue = useDebounce(searchValue, 500);
 
   const [recommendations, setRecommendations] = useState<Poi[]>([]);
+
+  const handleMyLocation = () => {
+    navigator.geolocation.getCurrentPosition(({ coords }) => {
+      getNearbyPointsLocationPointGet({
+        x: coords.latitude,
+        y: coords.longitude,
+      }).then((data) => {
+        console.log(data);
+        props.handleSearch(data[0]);
+      });
+    });
+  };
 
   useEffect(() => {
     if (!debouncedSearchValue) return;
@@ -55,6 +69,10 @@ export const SearchModal = (props: Props) => {
                 className="w-full"
               />
             </div>
+
+            <button onClick={handleMyLocation}>
+              <img src={MyLocationSvg} alt="my_location" />
+            </button>
           </div>
 
           <div className="h-full overflow-x-hidden overflow-y-auto">
