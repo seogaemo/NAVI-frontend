@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 
-import CloseSvg from "./assets/close.svg";
-import SwapSvg from "./assets/swap.svg";
-import { Map } from "./components/Map";
-import { ModalType, SearchModal } from "./components/SearchModal";
-import { BodyType } from "./libs/api/custom-instance";
+import { Map } from "../components/Map";
+import { ModalType, SearchModal } from "../components/SearchModal";
+import { BodyType } from "../libs/api/custom-instance";
 import {
   getMultiPedestrianRoutePedestrianMultiPost,
   getSinglePedestrianRoutePedestrianSinglePost,
-} from "./libs/api/endpoints/pedestrian/pedestrian";
+} from "../libs/api/endpoints/pedestrian/pedestrian";
 import {
   PedestrianRouteRequest,
   Poi,
   ProcessingMultiResult,
   ProcessingResult,
-} from "./libs/api/schemas";
+} from "../libs/api/schemas";
+import CloseSvg from "./assets/close.svg";
+import SwapSvg from "./assets/swap.svg";
 
-function App() {
+function Index() {
   const [modalType, setModalType] = useState<ModalType | null>(null);
 
   const [start, setStart] = useState<Poi | null>(null);
@@ -163,4 +163,4 @@ function App() {
   );
 }
 
-export default App;
+export default Index;
