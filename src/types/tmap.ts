@@ -41,8 +41,19 @@ export type TMap = {
   setOptions: ({ zoomControl }: MapOptions) => void;
   destroy: () => void;
   on: (eventType: EventType, listener: (event: TMapEvent) => void) => void;
+  fitBounds: (
+    latLngBounds: TMapLatLngBounds,
+    margin:
+      | number
+      | {
+          left: number;
+          right: number;
+          top: number;
+          bottom: number;
+        }
+  ) => void;
 };
-type EventType = 'Click';
+type EventType = "Click";
 export type TMapEvent = {
   data: {
     lngLat: TMapLatLng;
@@ -53,6 +64,12 @@ export type TMapLatLng = {
   lng: () => number;
   _lat: number;
   _lng: number;
+};
+
+export type TMapLatLngBounds = {
+  toString: () => string;
+  contains: (latLng: TMapLatLng) => boolean;
+  extend: (latLng: TMapLatLng) => void;
 };
 
 export type TMapMarker = {

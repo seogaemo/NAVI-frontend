@@ -1,4 +1,4 @@
-import { TMapLatLng, TMap, TMapSize } from './tmap';
+import { TMap, TMapLatLng, TMapLatLngBounds, TMapSize } from "./tmap";
 
 declare global {
   interface Window {
@@ -12,8 +12,9 @@ declare global {
           height?: string | number;
           zoom?: number;
           zoomControl?: boolean;
-        },
+        }
       ) => TMap;
+      LatLngBounds: new (coord?: TMapLatLng) => TMapLatLngBounds;
       LatLng: new (lat, lon) => TMapLatLng;
       Marker: new (options?: {
         map: TMap;
@@ -24,6 +25,16 @@ declare global {
         icon?: string;
       }) => TMapMarker;
       Size: new (width: number, height: number) => TMapSize;
+      Polyline: new (options?: {
+        path: TMapLatLng[];
+        fillColor?: string;
+        fillOpacity?: number;
+        strokeColor?: string;
+        strokeOpacity?: number;
+        strokeWeight?: number;
+        direction?: boolean;
+        map: TMap;
+      }) => void;
     };
   }
 }

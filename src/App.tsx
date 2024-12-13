@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import CloseSvg from "./assets/close.svg";
 import SwapSvg from "./assets/swap.svg";
@@ -9,13 +9,27 @@ import {
   getMultiPedestrianRoutePedestrianMultiPost,
   getSinglePedestrianRoutePedestrianSinglePost,
 } from "./libs/api/endpoints/pedestrian/pedestrian";
-import { PedestrianRouteRequest, Poi } from "./libs/api/schemas";
+import {
+  PedestrianRouteRequest,
+  Poi,
+  ProcessingMultiResult,
+  ProcessingResult,
+} from "./libs/api/schemas";
 
 function App() {
   const [modalType, setModalType] = useState<ModalType | null>(null);
 
   const [start, setStart] = useState<Poi | null>(null);
   const [end, setEnd] = useState<Poi | null>(null);
+
+  const [routes, setRoutes] = useState<
+    ProcessingResult | ProcessingMultiResult
+  >();
+  const [selectedRoute, setSelectedRoute] = useState<ProcessingResult | null>(
+    null
+  );
+
+  useEffect(() => {}, [selectedRoute]);
 
   const getDistance = (start: Poi, end: Poi) => {
     const lat1 = start.frontLon;
@@ -65,9 +79,15 @@ function App() {
       };
 
       if (isClose)
-        getSinglePedestrianRoutePedestrianSinglePost(options).then(console.log);
+        getSinglePedestrianRoutePedestrianSinglePost(options).then((res) => {
+          setRoutes(res);
+          setSelectedRoute(res);
+        });
       else
-        getMultiPedestrianRoutePedestrianMultiPost(options).then(console.log);
+        getMultiPedestrianRoutePedestrianMultiPost(options).then((res) => {
+          setRoutes(res);
+          setSelectedRoute(res.suggestion);
+        });
     }
 
     closeModal();
@@ -132,7 +152,7 @@ function App() {
           </div>
         </div>
 
-        <Map />
+        <Map route={selectedRoute} />
       </div>
 
       <SearchModal
