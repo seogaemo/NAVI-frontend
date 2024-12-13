@@ -17,7 +17,7 @@ declare global {
       LatLngBounds: new (coord?: TMapLatLng) => TMapLatLngBounds;
       LatLng: new (lat, lon) => TMapLatLng;
       Marker: new (options?: {
-        map: TMap;
+        map: TMap | null;
         position: TMapLatLng;
         iconHTML?: string;
         iconSize?: TMapSize;

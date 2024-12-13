@@ -72,7 +72,7 @@ export const Map = ({ route }: Props) => {
   }, [instance]);
 
   useEffect(() => {
-    instance?.on("Click", (e: TMapEvent) => {
+    const handler = (e: TMapEvent) => {
       clickMarker?.setMap(null);
 
       const { lngLat } = e.data;
@@ -83,7 +83,9 @@ export const Map = ({ route }: Props) => {
           map: instance,
         })
       );
-    });
+    };
+
+    instance?.on("Click", handler);
 
     return () => {
       instance?.off("Click");
