@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ProcessingResult } from "../libs/api/schemas";
-import { TMap } from "../types/tmap";
+import { TMap, TMapEvent, TMapMarker } from "../types/tmap";
 
 const { Tmapv3 } = window;
 
@@ -11,6 +11,8 @@ interface Props {
 
 export const Map = ({ route }: Props) => {
   const [instance, setInstance] = useState<TMap | null>(null);
+
+  const [clickMarker, setClickMarker] = useState<TMapMarker | null>(null);
 
   useEffect(() => {
     if (!instance || !route) return;
@@ -68,6 +70,25 @@ export const Map = ({ route }: Props) => {
 
     setInstance(map);
   }, [instance]);
+
+  useEffect(() => {
+    instance?.on("Click", (e: TMapEvent) => {
+      clickMarker?.setMap(null);
+
+      const { lngLat } = e.data;
+
+      setClickMarker(
+        new Tmapv3.Marker({
+          position: new Tmapv3.LatLng(lngLat._lat, lngLat._lng),
+          map: instance,
+        })
+      );
+    });
+
+    return () => {
+      instance?.off("Click");
+    };
+  }, [clickMarker, instance]);
 
   return <div className="absolute top-0" id="map"></div>;
 };

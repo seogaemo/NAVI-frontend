@@ -41,6 +41,7 @@ export type TMap = {
   setOptions: ({ zoomControl }: MapOptions) => void;
   destroy: () => void;
   on: (eventType: EventType, listener: (event: TMapEvent) => void) => void;
+  off: (eventType: EventType) => void;
   fitBounds: (
     latLngBounds: TMapLatLngBounds,
     margin:

@@ -1,7 +1,7 @@
+import CloseSvg from "../assets/close.svg";
+import SwapSvg from "../assets/swap.svg";
 import { Poi } from "../libs/api/schemas";
 import { ModalType } from "./SearchModal";
-import CloseSvg from "./assets/close.svg";
-import SwapSvg from "./assets/swap.svg";
 
 interface Props {
   start: [Poi | null, React.Dispatch<React.SetStateAction<Poi | null>>];
