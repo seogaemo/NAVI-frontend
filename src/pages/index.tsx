@@ -31,14 +31,7 @@ function Index() {
 
   const openModal = (type: ModalType) => () => setModalType(type);
   const closeModal = () => setModalType(null);
-  const handleSwap = () => {
-    setStart(end);
-    setEnd(start);
-  };
-  const handleClear = () => {
-    setStart(null);
-    setEnd(null);
-  };
+
   const handleSearch = (value: Poi) => {
     if (modalType === "start") setStart(value);
     else setEnd(value);
@@ -77,11 +70,9 @@ function Index() {
     <>
       <div className="relative w-[100vw] h-[100dvh]">
         <SearchBox
-          start={start}
-          end={end}
+          start={[start, setStart]}
+          end={[end, setEnd]}
           openModal={openModal}
-          handleSwap={handleSwap}
-          handleClear={handleClear}
           setEnd={setEnd}
           setStart={setStart}
         />
