@@ -22,9 +22,7 @@ function App() {
   const [start, setStart] = useState<Poi | null>(null);
   const [end, setEnd] = useState<Poi | null>(null);
 
-  const [routes, setRoutes] = useState<
-    ProcessingResult | ProcessingMultiResult
-  >();
+  const [_, setRoutes] = useState<ProcessingResult | ProcessingMultiResult>();
   const [selectedRoute, setSelectedRoute] = useState<ProcessingResult | null>(
     null
   );
