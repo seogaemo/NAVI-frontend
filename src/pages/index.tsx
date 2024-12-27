@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Map } from "../components/Map";
 import { SearchBox } from "../components/SearchBox";
 import { ModalType, SearchModal } from "../components/SearchModal";
+import { SelectRoute } from "../components/SelectRoute";
 import { BodyType } from "../libs/api/custom-instance";
 import {
   getMultiPedestrianRoutePedestrianMultiPost,
@@ -22,12 +23,12 @@ function Index() {
   const [start, setStart] = useState<Poi | null>(null);
   const [end, setEnd] = useState<Poi | null>(null);
 
-  const [_, setRoutes] = useState<ProcessingResult | ProcessingMultiResult>();
+  const [routes, setRoutes] = useState<
+    ProcessingResult | ProcessingMultiResult
+  >();
   const [selectedRoute, setSelectedRoute] = useState<ProcessingResult | null>(
     null
   );
-
-  useEffect(() => {}, [selectedRoute]);
 
   const openModal = (type: ModalType) => () => setModalType(type);
   const closeModal = () => setModalType(null);
@@ -40,7 +41,7 @@ function Index() {
     const _end = modalType === "end" ? value : end!;
 
     if (_start && _end) {
-      const isClose = getDistance(_start, _end) / 1000 <= 1;
+      const isClose = getDistance(_start, _end) / 1000 <= 0.3;
 
       const options: BodyType<PedestrianRouteRequest> = {
         endName: encodeURIComponent(_end.name!),
@@ -86,6 +87,13 @@ function Index() {
         onClose={closeModal}
         handleSearch={handleSearch}
       />
+
+      {routes &&
+        "boulevard" in routes &&
+        "shortest" in routes &&
+        "suggestion" in routes && (
+          <SelectRoute routes={routes} setRoute={setSelectedRoute} />
+        )}
     </>
   );
 }

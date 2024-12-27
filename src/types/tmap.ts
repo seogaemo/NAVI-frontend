@@ -67,6 +67,11 @@ export type TMapLatLng = {
   _lng: number;
 };
 
+export type TMapPolyline = {
+  getPath: () => TMapLatLng[];
+  setMap: (map: TMap | null) => void;
+};
+
 export type TMapLatLngBounds = {
   toString: () => string;
   contains: (latLng: TMapLatLng) => boolean;

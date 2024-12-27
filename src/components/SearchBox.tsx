@@ -8,7 +8,6 @@ interface Props {
   end: [Poi | null, React.Dispatch<React.SetStateAction<Poi | null>>];
   setStart: React.Dispatch<React.SetStateAction<Poi | null>>;
   setEnd: React.Dispatch<React.SetStateAction<Poi | null>>;
-
   openModal: (type: ModalType) => () => void;
 }
 

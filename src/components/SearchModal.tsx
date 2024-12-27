@@ -27,7 +27,6 @@ export const SearchModal = (props: Props) => {
         x: coords.latitude,
         y: coords.longitude,
       }).then((data) => {
-        console.log(data);
         props.handleSearch(data[0]);
       });
     });
@@ -39,7 +38,6 @@ export const SearchModal = (props: Props) => {
     searchPoiPoiSearchGet({
       searchKeyword: debouncedSearchValue,
     }).then((data) => {
-      console.log(data);
       setRecommendations(data?.searchPoiInfo?.pois?.poi || []);
     });
   }, [debouncedSearchValue]);

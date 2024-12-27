@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ProcessingResult } from "../libs/api/schemas";
-import { TMap, TMapEvent, TMapMarker } from "../types/tmap";
+import { TMap, TMapEvent, TMapMarker, TMapPolyline } from "../types/tmap";
 
 const { Tmapv3 } = window;
 
@@ -12,40 +12,81 @@ interface Props {
 export const Map = ({ route }: Props) => {
   const [instance, setInstance] = useState<TMap | null>(null);
 
+  const [routeObjects, setRouteObjects] = useState<{
+    start: TMapMarker;
+    end: TMapMarker;
+    polyline?: TMapPolyline;
+  }>();
+
   const [clickMarker, setClickMarker] = useState<TMapMarker | null>(null);
 
   useEffect(() => {
     if (!instance || !route) return;
 
-    new Tmapv3.Marker({
-      position: new Tmapv3.LatLng(route.points[0].lat, route.points[0].lng),
-      map: instance,
-    });
+    if (routeObjects) {
+      routeObjects.start.setMap(null);
+      routeObjects.end.setMap(null);
+      routeObjects.polyline?.setMap(null);
+    }
 
-    new Tmapv3.Marker({
+    const start = new Tmapv3.Marker({
       position: new Tmapv3.LatLng(
-        route.points[route.points.length - 1].lat,
-        route.points[route.points.length - 1].lng
+        route.road.features[0].geometry.coordinates[1],
+        route.road.features[0].geometry.coordinates[0]
       ),
       map: instance,
     });
 
-    new Tmapv3.Polyline({
-      path: route.points.map(
-        (point) => new Tmapv3.LatLng(point.lat, point.lng)
+    const end = new Tmapv3.Marker({
+      position: new Tmapv3.LatLng(
+        route.road.features[
+          route.road.features.length - 1
+        ].geometry.coordinates[1],
+        route.road.features[
+          route.road.features.length - 1
+        ].geometry.coordinates[0]
       ),
+      map: instance,
+    });
+
+    const polyline = new Tmapv3.Polyline({
+      path: route.road.features
+        .filter((point) => point.geometry.type === "LineString")
+        .flatMap((point) => {
+          return (point.geometry.coordinates as [number, number][]).map(
+            (c) => new Tmapv3.LatLng(c[1], c[0])
+          );
+        }),
       strokeColor: "#ff0000",
       strokeWeight: 6,
       map: instance,
     });
 
-    const bounds = new Tmapv3.LatLngBounds();
-
-    route.points.forEach((point) => {
-      bounds.extend(new Tmapv3.LatLng(point.lat, point.lng));
+    setRouteObjects({
+      start,
+      end,
+      polyline,
     });
 
-    instance.fitBounds(bounds, 200);
+    const bounds = new Tmapv3.LatLngBounds();
+
+    route.road.features.forEach((point) => {
+      if (point.geometry.type === "Point") {
+        bounds.extend(
+          new Tmapv3.LatLng(
+            point.geometry.coordinates[1],
+            point.geometry.coordinates[0]
+          )
+        );
+      }
+    });
+
+    instance.fitBounds(bounds, {
+      top: 116 + 100,
+      left: 100,
+      right: 100,
+      bottom: 200 + 100,
+    });
   }, [instance, route]);
 
   useEffect(() => {

@@ -1,4 +1,10 @@
-import { TMap, TMapLatLng, TMapLatLngBounds, TMapSize } from "./tmap";
+import {
+  TMap,
+  TMapLatLng,
+  TMapLatLngBounds,
+  TMapSize,
+  TmapPolyline,
+} from "./tmap";
 
 declare global {
   interface Window {
@@ -34,7 +40,7 @@ declare global {
         strokeWeight?: number;
         direction?: boolean;
         map: TMap;
-      }) => void;
+      }) => TmapPolyline;
     };
   }
 }
