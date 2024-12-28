@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PacmanLoader } from "react-spinners";
 
 import { Map } from "../components/Map";
 import { SearchBox } from "../components/SearchBox";
@@ -22,6 +23,8 @@ function Index() {
 
   const [start, setStart] = useState<Poi | null>(null);
   const [end, setEnd] = useState<Poi | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [routes, setRoutes] = useState<
     ProcessingResult | ProcessingMultiResult
@@ -52,15 +55,19 @@ function Index() {
         startY: _start.frontLat!,
       };
 
+      setIsLoading(true);
+
       if (isClose)
         getSinglePedestrianRoutePedestrianSinglePost(options).then((res) => {
           setRoutes(res);
           setSelectedRoute(res);
+          setIsLoading(false);
         });
       else
         getMultiPedestrianRoutePedestrianMultiPost(options).then((res) => {
           setRoutes(res);
           setSelectedRoute(res.suggestion);
+          setIsLoading(false);
         });
     }
 
@@ -94,6 +101,12 @@ function Index() {
         "suggestion" in routes && (
           <SelectRoute routes={routes} setRoute={setSelectedRoute} />
         )}
+
+      {isLoading && (
+        <div className="fixed w-[100vw] h-[100dvh] z-[10000] top-0 flex items-center justify-center bg-[rgba(0,0,0,0.8)]">
+          <PacmanLoader color="#ffffff" />
+        </div>
+      )}
     </>
   );
 }
