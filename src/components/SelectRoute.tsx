@@ -45,22 +45,24 @@ export const SelectRoute = ({ routes, setRoute }: Props) => {
       snapPoints={({ maxHeight }) => [200, maxHeight / 2]}
     >
       <div className="px-4 flex flex-col gap-2">
-        <button
-          onClick={() => {
-            if (routes) setRoute(walkablityBestRoute);
-          }}
-          className="w-full border-gray-100 flex flex-col justify-start px-2 py-1"
-        >
-          <p className="text-sm text-blue-700">Walkablity Index 기반 추천</p>
-          <h1 className="text-2xl font-bold text-gray-800">
-            {((walkablityBestRoute.distance ?? 0) / 1000).toFixed(1)} km
-          </h1>
+        {walkablityBestRoute.walkablityIndex > 0 && (
+          <button
+            onClick={() => {
+              if (routes) setRoute(walkablityBestRoute);
+            }}
+            className="w-full border-gray-100 flex flex-col justify-start px-2 py-1"
+          >
+            <p className="text-sm text-blue-700">Walkablity Index 기반 추천</p>
+            <h1 className="text-2xl font-bold text-gray-800">
+              {((walkablityBestRoute.distance ?? 0) / 1000).toFixed(1)} km
+            </h1>
 
-          <p className="text-sm text-gray-500">
-            {((walkablityBestRoute.time ?? 0) / 60).toFixed(0)}분 / 점수:{" "}
-            {walkablityBestRoute.walkablityIndex.toFixed(2)}
-          </p>
-        </button>
+            <p className="text-sm text-gray-500">
+              {((walkablityBestRoute.time ?? 0) / 60).toFixed(0)}분 / 점수:{" "}
+              {walkablityBestRoute.walkablityIndex.toFixed(2)}
+            </p>
+          </button>
+        )}
         {routeOptions.map((option) => (
           <button
             onClick={() => {

@@ -29,7 +29,7 @@ export const RouteInfo = ({ route, backward }: Props) => {
             >
               뒤로
             </button>
-            {route.points.length && (
+            {route.points.length > 0 && (
               <button
                 onClick={() => setPointsShow(true)}
                 className="text-blue-500 text-sm font-bold"
