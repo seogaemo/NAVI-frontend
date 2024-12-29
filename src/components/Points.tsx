@@ -14,7 +14,10 @@ export const Points = ({ points, close }: Props) => {
       onClick={(e) => e.target === e.currentTarget && close()}
     >
       <div className="w-11/12 max-h-[80%] p-3 bg-white rounded-md overflow-hidden">
-        <div className="w-full flex flex-row gap-2 snap-x snap-mandatory scrollbar-hide overflow-x-scroll">
+        <div
+          className="w-full flex flex-row gap-2 snap-x snap-mandatory scrollbar-hide overflow-x-scroll"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
           {points.map((point, i) => (
             <div
               key={point.id || i}
