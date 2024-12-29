@@ -10,7 +10,6 @@ interface Props {
 }
 
 export const RouteInfo = ({ route, backward }: Props) => {
-  console.log(route);
   const [pointsShow, setPointsShow] = useState(false);
 
   return (
