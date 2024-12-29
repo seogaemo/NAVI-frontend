@@ -10,10 +10,10 @@ interface Props {
 export const Points = ({ points, close }: Props) => {
   return createPortal(
     <div
-      className="fixed inset-0 z-[1001] bg-[rgba(0,0,0,0.5)] w-screen h-dvh flex items-center justify-center"
+      className="fixed inset-0 z-[1001] bg-[rgba(0,0,0,0.5)] w-screen h-dvh flex items-center justify-center overflow-hidden"
       onClick={(e) => e.target === e.currentTarget && close()}
     >
-      <div className="w-11/12 max-h-[80%] snap-x snap-mandatory scrollbar-hide overflow-x-scroll pt-4 px-4 pb-3 bg-white rounded-md flex flex-row gap-2">
+      <div className="w-11/12 max-h-[80%] snap-x snap-mandatory scrollbar-hide overflow-x-scroll p-4 bg-white rounded-md flex flex-row gap-2">
         {points.map((point, i) => (
           <div
             key={point.id || i}
