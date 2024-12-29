@@ -2,6 +2,7 @@ import { useState } from "react";
 import { PacmanLoader } from "react-spinners";
 
 import { Map } from "../components/Map";
+import { RouteInfo } from "../components/RouteInfo";
 import { SearchBox } from "../components/SearchBox";
 import { ModalType, SearchModal } from "../components/SearchModal";
 import { SelectRoute } from "../components/SelectRoute";
@@ -44,7 +45,7 @@ function Index() {
     const _end = modalType === "end" ? value : end!;
 
     if (_start && _end) {
-      const isClose = getDistance(_start, _end) / 1000 <= 0.3;
+      const isClose = getDistance(_start, _end) / 1000 <= 0.1; // 100m 이내는 단일 경로 처리
 
       const options: BodyType<PedestrianRouteRequest> = {
         endName: encodeURIComponent(_end.name!),
@@ -55,6 +56,7 @@ function Index() {
         startY: _start.frontLat!,
       };
 
+      setSelectedRoute(null);
       setIsLoading(true);
 
       if (isClose)
@@ -66,7 +68,6 @@ function Index() {
       else
         getMultiPedestrianRoutePedestrianMultiPost(options).then((res) => {
           setRoutes(res);
-          setSelectedRoute(res.suggestion);
           setIsLoading(false);
         });
     }
@@ -95,12 +96,23 @@ function Index() {
         handleSearch={handleSearch}
       />
 
-      {routes &&
+      {selectedRoute ? (
+        <RouteInfo
+          route={selectedRoute}
+          backward={
+            routes && "suggestion" in routes
+              ? () => setSelectedRoute(null)
+              : undefined
+          }
+        />
+      ) : (
+        routes &&
         "boulevard" in routes &&
         "shortest" in routes &&
         "suggestion" in routes && (
           <SelectRoute routes={routes} setRoute={setSelectedRoute} />
-        )}
+        )
+      )}
 
       {isLoading && (
         <div className="fixed w-[100vw] h-[100dvh] z-[10000] top-0 flex items-center justify-center bg-[rgba(0,0,0,0.8)]">
