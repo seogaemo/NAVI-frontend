@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BottomSheet } from "react-spring-bottom-sheet";
 import "react-spring-bottom-sheet/dist/style.css";
 
@@ -31,11 +31,15 @@ export const SelectRoute = ({ routes, setRoute }: Props) => {
   const [walkablityBestRoute, setWalkablityBestRoute] =
     useState<ProcessingResult>(routes.suggestion);
 
-  Object.values(routes).forEach((route) => {
-    if (route.walkablityIndex > walkablityBestRoute.walkablityIndex) {
-      setWalkablityBestRoute(route);
-    }
-  });
+  useEffect(() => {
+    setWalkablityBestRoute(routes.suggestion);
+
+    Object.values(routes).forEach((route) => {
+      if (route.walkablityIndex > walkablityBestRoute.walkablityIndex) {
+        setWalkablityBestRoute(route);
+      }
+    });
+  }, [routes]);
 
   return (
     <BottomSheet
