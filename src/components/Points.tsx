@@ -13,14 +13,11 @@ export const Points = ({ points, close }: Props) => {
       className="fixed inset-0 z-[1001] bg-[rgba(0,0,0,0.5)] w-screen h-dvh flex items-center justify-center"
       onClick={(e) => e.target === e.currentTarget && close()}
     >
-      <div
-        className="w-11/12 max-h-[80%] snap-x snap-mandatory scrollbar-hide overflow-x-scroll pt-4 px-4 pb-3 bg-white rounded-md flex flex-row gap-2"
-        style={{ WebkitOverflowScrolling: "touch" }}
-      >
+      <div className="w-11/12 max-h-[80%] snap-x snap-mandatory overflow-x-scroll pt-4 px-4 pb-3 bg-white rounded-md flex flex-row gap-2">
         {points.map((point, i) => (
           <div
             key={point.id || i}
-            className="snap-center min-w-full min-h-full flex flex-col gap-2 select-none"
+            className="snap-center min-w-full min-h-full flex flex-col gap-2"
           >
             <img
               src={`${import.meta.env.VITE_CDN_URL}/${point.id}.jpg`}
