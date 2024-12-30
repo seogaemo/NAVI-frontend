@@ -34,6 +34,8 @@ function Index() {
     null
   );
 
+  const [detailModal, setDetailModal] = useState(false);
+
   const openModal = (type: ModalType) => () => setModalType(type);
   const closeModal = () => setModalType(null);
 
@@ -68,6 +70,11 @@ function Index() {
       else
         getMultiPedestrianRoutePedestrianMultiPost(options).then((res) => {
           setRoutes(res);
+          setSelectedRoute(
+            Object.values(res).reduce((prev, curr) =>
+              prev.walkablityIndex > curr.walkablityIndex ? prev : curr
+            )
+          );
           setIsLoading(false);
         });
     }
@@ -96,12 +103,12 @@ function Index() {
         handleSearch={handleSearch}
       />
 
-      {selectedRoute ? (
+      {detailModal && selectedRoute ? (
         <RouteInfo
           route={selectedRoute}
           backward={
             routes && "suggestion" in routes
-              ? () => setSelectedRoute(null)
+              ? () => setDetailModal(false)
               : undefined
           }
         />
@@ -110,7 +117,13 @@ function Index() {
         "boulevard" in routes &&
         "shortest" in routes &&
         "suggestion" in routes && (
-          <SelectRoute routes={routes} setRoute={setSelectedRoute} />
+          <SelectRoute
+            routes={routes}
+            setRoute={(route: ProcessingResult) => {
+              setSelectedRoute(route);
+              setDetailModal(true);
+            }}
+          />
         )
       )}
 
