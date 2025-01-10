@@ -93,7 +93,7 @@ function Index() {
           setStart={setStart}
         />
 
-        <Map route={selectedRoute} />
+        <Map route={selectedRoute} routes={routes} />
       </div>
 
       <SearchModal

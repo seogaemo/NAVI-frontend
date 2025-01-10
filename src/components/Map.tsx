@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 
-import { ProcessingResult } from "../libs/api/schemas";
+import { ProcessingMultiResult, ProcessingResult } from "../libs/api/schemas";
 import { TMap, TMapEvent, TMapMarker, TMapPolyline } from "../types/tmap";
 
 const { Tmapv3 } = window;
 
 interface Props {
   route: ProcessingResult | null;
+  routes?: ProcessingResult | ProcessingMultiResult;
 }
 
-export const Map = ({ route }: Props) => {
+export const Map = ({ route, routes }: Props) => {
   const [instance, setInstance] = useState<TMap | null>(null);
 
   const [routeObjects, setRouteObjects] = useState<{
     start: TMapMarker;
     end: TMapMarker;
-    polyline?: TMapPolyline;
+    polyline?: TMapPolyline[];
   }>();
 
   const [clickMarker, setClickMarker] = useState<TMapMarker | null>(null);
@@ -26,7 +27,7 @@ export const Map = ({ route }: Props) => {
     if (routeObjects) {
       routeObjects.start.setMap(null);
       routeObjects.end.setMap(null);
-      routeObjects.polyline?.setMap(null);
+      routeObjects.polyline?.forEach((item) => item.setMap(null));
     }
 
     const start = new Tmapv3.Marker({
@@ -49,18 +50,46 @@ export const Map = ({ route }: Props) => {
       map: instance,
     });
 
-    const polyline = new Tmapv3.Polyline({
-      path: route.road.features
-        .filter((point) => point.geometry.type === "LineString")
-        .flatMap((point) => {
-          return (point.geometry.coordinates as [number, number][]).map(
-            (c) => new Tmapv3.LatLng(c[1], c[0])
+    const polyline: TMapPolyline[] = [];
+    if (
+      routes &&
+      "boulevard" in routes &&
+      "shortest" in routes &&
+      "suggestion" in routes
+    )
+      Object.values(routes)
+        .sort((a, b) => (a === route ? 1 : 0) - (b === route ? 1 : 0))
+        .forEach((item: ProcessingResult) => {
+          polyline.push(
+            new Tmapv3.Polyline({
+              path: item.road.features
+                .filter((point) => point.geometry.type === "LineString")
+                .flatMap((point) => {
+                  return (point.geometry.coordinates as [number, number][]).map(
+                    (c) => new Tmapv3.LatLng(c[1], c[0])
+                  );
+                }),
+              strokeColor: item === route ? "#ff0000" : "#727272",
+              strokeWeight: 6,
+              map: instance,
+            })
           );
-        }),
-      strokeColor: "#ff0000",
-      strokeWeight: 6,
-      map: instance,
-    });
+        });
+    else
+      polyline.push(
+        new Tmapv3.Polyline({
+          path: route.road.features
+            .filter((point) => point.geometry.type === "LineString")
+            .flatMap((point) => {
+              return (point.geometry.coordinates as [number, number][]).map(
+                (c) => new Tmapv3.LatLng(c[1], c[0])
+              );
+            }),
+          strokeColor: "#ff0000",
+          strokeWeight: 6,
+          map: instance,
+        })
+      );
 
     setRouteObjects({
       start,
