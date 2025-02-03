@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 
 import { ProcessingMultiResult, ProcessingResult } from "../libs/api/schemas";
-import { TMap, TMapEvent, TMapMarker, TMapPolyline } from "../types/tmap";
+import {
+  TMap,
+  TMapEvent,
+  TMapInfoWindow,
+  TMapMarker,
+  TMapPolyline,
+} from "../types/tmap";
 
 const { Tmapv3 } = window;
 
@@ -17,6 +23,7 @@ export const Map = ({ route, routes }: Props) => {
     start: TMapMarker;
     end: TMapMarker;
     polyline?: TMapPolyline[];
+    infoWindow?: TMapInfoWindow;
   }>();
 
   const [clickMarker, setClickMarker] = useState<TMapMarker | null>(null);
@@ -51,50 +58,106 @@ export const Map = ({ route, routes }: Props) => {
     });
 
     const polyline: TMapPolyline[] = [];
+    let infoWindow: TMapInfoWindow | undefined;
     if (
       routes &&
       "boulevard" in routes &&
       "shortest" in routes &&
       "suggestion" in routes
-    )
+    ) {
+      if (routeObjects?.infoWindow) {
+        routeObjects.infoWindow.setMap(null);
+      }
+
       Object.values(routes)
         .sort((a, b) => (a === route ? 1 : 0) - (b === route ? 1 : 0))
         .forEach((item: ProcessingResult) => {
+          const filtered = item.road.features.filter(
+            (point) => point.geometry.type === "LineString"
+          );
+
+          if (item === route) {
+            infoWindow = new Tmapv3.InfoWindow({
+              position: new Tmapv3.LatLng(
+                (
+                  filtered?.[Math.floor((filtered.length - 1) / 2)].geometry
+                    .coordinates as [number, number][]
+                )[0][1],
+                (
+                  filtered?.[Math.floor((filtered.length - 1) / 2)].geometry
+                    .coordinates as [number, number][]
+                )[0][0]
+              ),
+              anchor: "bottom-left",
+              content: `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: white;">
+                  <h1 style="font-size: 18px;">Walkablity Index</h1>
+                  <p style="font-size: 14px;">${route.walkablityIndex.toString()}</p>
+                </div>
+              `,
+              type: 2,
+              map: instance,
+            });
+          }
+
           polyline.push(
             new Tmapv3.Polyline({
-              path: item.road.features
-                .filter((point) => point.geometry.type === "LineString")
-                .flatMap((point) => {
-                  return (point.geometry.coordinates as [number, number][]).map(
-                    (c) => new Tmapv3.LatLng(c[1], c[0])
-                  );
-                }),
+              path: filtered.flatMap((point) => {
+                return (point.geometry.coordinates as [number, number][]).map(
+                  (c) => new Tmapv3.LatLng(c[1], c[0])
+                );
+              }),
               strokeColor: item === route ? "#ff0000" : "#727272",
+              strokeOpacity: 1,
               strokeWeight: 6,
               map: instance,
             })
           );
         });
-    else
+    } else {
+      const filtered = route.road.features.filter(
+        (point) => point.geometry.type === "LineString"
+      );
+
       polyline.push(
         new Tmapv3.Polyline({
-          path: route.road.features
-            .filter((point) => point.geometry.type === "LineString")
-            .flatMap((point) => {
-              return (point.geometry.coordinates as [number, number][]).map(
-                (c) => new Tmapv3.LatLng(c[1], c[0])
-              );
-            }),
+          path: filtered.flatMap((point) => {
+            return (point.geometry.coordinates as [number, number][]).map(
+              (c) => new Tmapv3.LatLng(c[1], c[0])
+            );
+          }),
           strokeColor: "#ff0000",
+          strokeOpacity: 1,
           strokeWeight: 6,
           map: instance,
         })
       );
 
+      if (routeObjects?.infoWindow) {
+        routeObjects.infoWindow.setMap(null);
+      }
+
+      infoWindow = new Tmapv3.InfoWindow({
+        position: new Tmapv3.LatLng(
+          route.road.features[0].geometry.coordinates[1],
+          route.road.features[0].geometry.coordinates[0]
+        ),
+        content: `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: white; opacity: 0.9;">
+                  <h1 style="font-size: 18px;">Walkablity Index</h1>
+                  <p style="font-size: 14px;">${route.walkablityIndex.toString()}</p>
+                </div>
+              `,
+        type: 2,
+        map: instance,
+      });
+    }
+
     setRouteObjects({
       start,
       end,
       polyline,
+      ...(infoWindow ? { infoWindow } : {}),
     });
 
     const bounds = new Tmapv3.LatLngBounds();

@@ -97,3 +97,11 @@ export type TmapResponse = {
 export type TmapReverseGeocodingResponse = {
   addressInfo: TmapAddressInfo;
 };
+
+export type TMapInfoWindow = {
+  getOffset: () => TMapSize;
+  getPosition: () => TMapLatLng;
+  setPosition: (latLng: TMapLatLng) => void;
+  getContent: () => string;
+  setMap: (map: TMap | null) => void;
+};

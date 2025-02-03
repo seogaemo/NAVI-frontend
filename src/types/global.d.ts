@@ -1,5 +1,6 @@
 import {
   TMap,
+  TMapInfoWindow,
   TMapLatLng,
   TMapLatLngBounds,
   TMapSize,
@@ -41,6 +42,23 @@ declare global {
         direction?: boolean;
         map: TMap;
       }) => TmapPolyline;
+      InfoWindow: new (options?: {
+        position?: TMapLatLng;
+        content?: string;
+        type?: 1 | 2; // 1: 말풍선, 2: 사각형
+        anchor?:
+          | "top-left"
+          | "top"
+          | "top-right"
+          | "left"
+          | "center"
+          | "right"
+          | "bottom-left"
+          | "bottom"
+          | "bottom-right";
+        visible?: boolean;
+        map?: TMap;
+      }) => TMapInfoWindow;
     };
   }
 }
